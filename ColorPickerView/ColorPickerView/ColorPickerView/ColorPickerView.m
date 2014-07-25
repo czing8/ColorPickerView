@@ -19,13 +19,7 @@
 @property (nonatomic, strong) UIColor * selectedColor;
 
 @property (nonatomic, strong) NSArray * colors;
-
 @property (nonatomic, strong) UICollectionView *colorCollectionView;
-
-
--(void)doInitialization;     // Initializes the collection view and default values
--(void)setColorCell:(UICollectionViewCell *)cell selected:(BOOL)selected;       // marks a cell as selected according to "selection", does nothing is selection highlighting is disabled
--(void)resetColorPicker;
 
 @end
 
@@ -55,26 +49,20 @@
 
 #pragma mark - setters
 
--(void)setColors:(NSArray *)colorsIn;
-{
+-(void)setColors:(NSArray *)colorsIn{
     _colors = nil;
     _colors = colorsIn;
     
     [self resetColorPicker];
 }
 
--(void)setColorsPerRow:(NSInteger)colorsPerRow
-{
-    
+-(void)setColorsPerRow:(NSInteger)colorsPerRow{
     if (colorsPerRow < 1) {
         
         _colorsPerRow = 1;
-        
         [self resetColorPicker];
-        
         return;
     }
-    
     _colorsPerRow = colorsPerRow;
     
     [self resetColorPicker];
@@ -105,10 +93,6 @@
     [self resetColorPicker];
 }
 
-
-
-
-
 - (UICollectionView *)colorCollectionView{
     if (!_colorCollectionView) {
         _colorCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
@@ -127,7 +111,6 @@
 }
 
 
-
 -(void)layoutSubviews
 {
     _colorCollectionView.frame = self.bounds;
@@ -144,15 +127,6 @@
     _selectionBorderColor = [UIColor whiteColor];
     
     [self addSubview:self.colorCollectionView];
-    
-    // create default colors;
-    
-    //    UIColor *red = [UIColor redColor];
-    //    UIColor *green = [UIColor greenColor];
-    //    UIColor *blue = [UIColor blueColor];
-    //
-    //    colors = [NSArray arrayWithObjects:red,green,blue, nil];
-    
 }
 
 -(void)setColorCell:(UICollectionViewCell *)cell selected:(BOOL)selected
@@ -171,14 +145,10 @@
 {
     [_colorCollectionView setContentOffset:CGPointMake(0, 0)];
     [_colorCollectionView reloadData];
-    
 }
 
 
-
-
 #pragma mark - Collection View Delegate and DataSource
-
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     return _colors.count;
@@ -213,7 +183,7 @@
 {
     UICollectionViewCell *cell = [_colorCollectionView cellForItemAtIndexPath:indexPath];
     
-    cell.alpha = 0.5;
+    cell.alpha = 0.9;
 }
 
 -(void)collectionView:(UICollectionView *)collectionView didUnhighlightItemAtIndexPath:(NSIndexPath *)indexPath
@@ -226,26 +196,21 @@
 
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    
-    
     [self setColorCell:[collectionView cellForItemAtIndexPath:indexPath] selected:YES];
     
     _selectedColor = [_colors objectAtIndex:indexPath.row];
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(colorPickerView:didSelectedColor:)]) {
-        [self.delegate colorPickerView:self didSelectedColor:[_colors objectAtIndex:indexPath.row]];
+        [self.delegate colorPickerView:self didSelectedColor:_selectedColor];
     }
 }
 
 -(void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     [self setColorCell:[collectionView cellForItemAtIndexPath:indexPath] selected:NO];
 }
 
-
-
-#pragma mark - Collection View Layout Delegate
+#pragma mark - CollectionView Layout Delegate
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     
@@ -256,29 +221,24 @@
         spaceMultiplier = 0;
     }
     
-    // calculate size for 3 thumbs per line
     CGFloat size = floorf((collectionView.bounds.size.width-spaceMultiplier)/itemsPerRow);
     
     return CGSizeMake(size, size);
-    
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
     
     return _colorCellPadding;
-    
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
     
     return _colorCellPadding;
-    
 }
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
     
     return UIEdgeInsetsMake(0,0,0,0);
-    
 }
 
 
